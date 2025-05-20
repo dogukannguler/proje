@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title %}Yardım & İletişim{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 950px;">
+    <div class="row g-4 align-items-stretch">
+        <!-- İletişim Kutusu -->
+        <div class="col-12 col-md-5">
+            <div class="card shadow-lg border-0 rounded-4 h-100">
+                <div class="card-header bg-gradient text-white rounded-top-4" style="background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);">
+                    <h3 class="mb-0 fw-bold d-flex align-items-center gap-2"><i class="fas fa-envelope"></i> İletişim</h3>
+                </div>
+                <div class="card-body p-4">
+                    <p class="mb-3">Her türlü soru, öneri veya destek için bize ulaşabilirsiniz.</p>
+                    <div class="mb-3">
+                        <label class="form-label fs-6">E-posta</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-lg rounded-start-3" id="contactEmail" value="info@görevtakip.com" readonly>
+                            <button class="btn btn-primary rounded-end-3" type="button" onclick="copyEmail()"><i class="fas fa-copy"></i></button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fs-6">Geliştiriciler</label>
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex align-items-center gap-2 mb-2"><i class="fas fa-user-circle fa-lg text-primary"></i> <span class="fw-semibold">Doğukan Güler</span></li>
+                            <li class="d-flex align-items-center gap-2"><i class="fas fa-user-circle fa-lg text-primary"></i> <span class="fw-semibold">Kava Vurgun</span></li>
+                        </ul>
+                    </div>
+                    <div class="text-muted small mt-4">
+                        <span>Uygulama Sürümü: <b>v1.0.0</b></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- SSS Kutusu -->
+        <div class="col-12 col-md-7">
+            <div class="card shadow-lg border-0 rounded-4 h-100">
+                <div class="card-header bg-gradient text-white rounded-top-4" style="background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);">
+                    <h3 class="mb-0 fw-bold d-flex align-items-center gap-2"><i class="fas fa-question-circle"></i> Sıkça Sorulan Sorular</h3>
+                </div>
+                <div class="card-body p-4">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq1">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                    Görev nasıl eklerim ve yönetirim?
+                                </button>
+                            </h2>
+                            <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Sol menüden "Görevlerim"e gidip yeni görev ekleyebilir, mevcut görevleri düzenleyebilir veya tamamlandı olarak işaretleyebilirsiniz.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq2">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                    Bildirimler nasıl çalışır?
+                                </button>
+                            </h2>
+                            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yaklaşan ve geciken görevler için anlık bildirim, sesli uyarı ve toast alırsınız. Bildirimler sağ üstteki zil simgesinde görünür.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq3">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                    Takvimde görevlerimi görebilir miyim?
+                                </button>
+                            </h2>
+                            <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    "Takvim" sekmesinde tüm görevlerinizi ve teslim tarihlerini renkli olarak görebilirsiniz.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq4">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                    Grup oluşturmak ve üye eklemek kolay mı?
+                                </button>
+                            </h2>
+                            <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="faq4" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    "Gruplar"dan yeni grup oluşturabilir, grup detayında "Üye Ekle" ile kullanıcı adı veya e-posta ile üye ekleyebilirsiniz (sadece yöneticiler).
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq5">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                    Grup takviminde neler var?
+                                </button>
+                            </h2>
+                            <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="faq5" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Grup takviminde, gruptaki tüm görevler ve sorumluları görünebilir. Göreve tıklayarak detay görebilirsiniz.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq6">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                    Gruptan nasıl ayrılırım?
+                                </button>
+                            </h2>
+                            <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="faq6" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Grup detayında sağ üstteki "Gruptan Ayrıl" butonunu kullanabilirsiniz. Ayrıldığınız grup listenizden silinir.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="faq7">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                    Grup içinde paylaşım ve yorum yapabilir miyim?
+                                </button>
+                            </h2>
+                            <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="faq7" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    "Paylaşımlar" sekmesinden paylaşım ekleyebilir, yorum yapabilir ve kendi içeriklerinizi düzenleyip silebilirsiniz.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function copyEmail() {
+    var copyText = document.getElementById("contactEmail");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // mobile
+    document.execCommand("copy");
+    alert("E-posta adresi kopyalandı!");
+}
+</script>
+<style>
+.card-header.bg-gradient {
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 2px 12px #2563eb11 !important;
+}
+.accordion-button {
+    font-weight: 600;
+    font-size: 1.08rem;
+}
+body.dark-mode .card {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .card-header.bg-gradient {
+    background: linear-gradient(90deg, #232b36 0%, #2563eb 100%) !important;
+    color: #fff !important;
+}
+body.dark-mode .accordion-button {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .accordion-body {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profil Resmi" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <img src="{% static 'avatars/default_avatar_1.png' %}" alt="Profil Resmi" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% endif %}
+                <h4>{{ user.get_full_name }}</h4>
+                <p class="text-muted">@{{ user.username }}</p>
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">Profili Düzenle</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Profil Bilgileri</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Ad:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.first_name }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Soyad:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.last_name }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>E-posta:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.email }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Telefon:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.phone_number|default:"Belirtilmemiş" }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3">
+                        <strong>Kayıt Tarihi:</strong>
+                    </div>
+                    <div class="col-sm-9">
+                        {{ user.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

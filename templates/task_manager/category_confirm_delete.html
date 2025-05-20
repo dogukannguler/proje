@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Kategoriyi Sil{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Kategoriyi Sil</h4>
+    </div>
+    <div class="card-body">
+        <p>Bu kategoriyi silmek istediğinizden emin misiniz?</p>
+        <p><strong>{{ category.name }}</strong></p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Evet, Sil</button>
+            <a href="{% url 'category_list' %}" class="btn btn-secondary">İptal</a>
+        </form>
+    </div>
+</div>
+{% endblock %} 

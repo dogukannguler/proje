@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}Görev Takip ve Zaman Yönetimi{% endblock %}
+
+{% block content %}
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<!-- Dekoratif SVG Dalga Arka Plan -->
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;">
+    <svg width="100%" height="100%" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="bg-gradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e0e7ff"/>
+                <stop offset="100%" stop-color="#f0fdfa"/>
+            </linearGradient>
+        </defs>
+        <rect width="1440" height="600" fill="url(#bg-gradient)"/>
+        <path d="M0,400 Q720,600 1440,400 L1440,600 L0,600 Z" fill="#a5b4fc" fill-opacity="0.18"/>
+        <circle cx="1200" cy="100" r="80" fill="#38bdf8" fill-opacity="0.12"/>
+        <circle cx="200" cy="80" r="60" fill="#a78bfa" fill-opacity="0.10"/>
+    </svg>
+</div>
+
+<div class="container py-3">
+    <div class="row justify-content-center align-items-start min-vh-80" style="min-height: 80vh;">
+        <div class="col-lg-9">
+            <div class="card shadow-lg border-0 rounded-5 p-4 main-card">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <h1 class="display-4 fw-bold mb-3 gradient-text-2" style="font-family: 'Inter', sans-serif; font-size: 3rem;">
+                            Görev Takip ve Zaman Yönetimi Web Uygulaması
+                        </h1>
+                        <p class="lead description-modern">
+                            Bireylerin ve küçük ekiplerin görevlerini düzenlemelerine ve zamanlarını daha verimli yönetmelerine yardımcı olacak modern bir platform.
+                        </p>
+                    </div>
+
+                    <!-- Özellikler -->
+                    <div class="row justify-content-center mb-5">
+                        <div class="col-md-10 col-lg-8">
+                            <div class="card border-0 shadow feature-card rounded-4">
+                                <div class="card-body p-4" style="background: #f8faff;">
+                                    <h5 class="fw-semibold mb-4 text-center gradient-text" style="font-size: 1.3rem;">
+                                        <i class="fas fa-star me-2"></i>Temel Özellikler
+                                    </h5>
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-4 d-flex align-items-center gap-3">
+                                            <span class="feature-icon-img" style="background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);"><i class="fas fa-tasks"></i></span>
+                                            <div>
+                                                <span class="fw-bold">Görev Yönetimi</span><br>
+                                                <span class="text-muted">Görevlerinizi oluşturun, düzenleyin ve kategorilere ayırın. Teslim tarihlerini belirleyin ve takip edin.</span>
+                                            </div>
+                                        </li>
+                                        <li class="mb-4 d-flex align-items-center gap-3">
+                                            <span class="feature-icon-img" style="background: linear-gradient(135deg, #f87171 0%, #fbbf24 100%);"><i class="fas fa-calendar-alt"></i></span>
+                                            <div>
+                                                <span class="fw-bold">Takvim Görünümü</span><br>
+                                                <span class="text-muted">Görevlerinizi takvim üzerinde görüntüleyin ve planlamanızı kolayca yapın.</span>
+                                            </div>
+                                        </li>
+                                        <li class="mb-4 d-flex align-items-center gap-3">
+                                            <span class="feature-icon-img" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e42 100%);"><i class="fas fa-bell"></i></span>
+                                            <div>
+                                                <span class="fw-bold">Bildirim Sistemi</span><br>
+                                                <span class="text-muted">Yaklaşan ve geciken görevler için anlık bildirimler alın.</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Butonları -->
+                    <div class="text-center mb-4">
+                        {% if not user.is_authenticated %}
+                            <div class="d-flex flex-wrap justify-content-center gap-3">
+                                <a href="{% url 'login' %}" class="btn btn-gradient-primary btn-lg px-5 rounded-pill shadow">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                                </a>
+                                <a href="{% url 'register' %}" class="btn btn-gradient-outline btn-lg px-5 rounded-pill shadow">
+                                    <i class="fas fa-user-plus me-2"></i>Kayıt Ol
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="d-flex flex-wrap justify-content-center gap-3">
+                                <a href="{% url 'task_list' %}" class="btn btn-gradient-primary btn-lg px-5 rounded-pill shadow">
+                                    <i class="fas fa-list me-2"></i>Görevlerim
+                                </a>
+                                <a href="{% url 'category_list' %}" class="btn btn-gradient-outline btn-lg px-5 rounded-pill shadow">
+                                    <i class="fas fa-folder me-2"></i>Kategoriler
+                                </a>
+                                <a href="{% url 'notifications' %}" class="btn btn-gradient-warning btn-lg px-5 rounded-pill shadow">
+                                    <i class="fas fa-bell me-2"></i>Bildirimler
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: none !important;
+    }
+    body.dark-mode {
+        background: #181c23 !important;
+    }
+    .main-card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 2.5rem;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+        transition: background 0.2s, color 0.2s;
+    }
+    body.dark-mode .main-card {
+        background: rgba(35,39,47,0.98) !important;
+        color: #e5e7eb !important;
+    }
+    .feature-card {
+        background: #f8faff;
+        border-radius: 1.5rem;
+        transition: background 0.2s, color 0.2s;
+    }
+    body.dark-mode .feature-card {
+        background: #232b36 !important;
+        color: #e5e7eb !important;
+    }
+    body.dark-mode .feature-card .gradient-text {
+        filter: brightness(1.25) contrast(1.2) saturate(1.2);
+        color: #7dd3fc !important;
+    }
+    body.dark-mode .feature-card .fw-bold {
+        color: #e0e7ff !important;
+        text-shadow: 0 1px 2px #181c23cc;
+    }
+    body.dark-mode .feature-card .text-muted {
+        color: #b6bdd6 !important;
+    }
+    body.dark-mode .feature-card .feature-icon-img {
+        filter: brightness(1.1) contrast(1.2) saturate(1.2);
+        box-shadow: 0 2px 8px 0 #181c2333;
+    }
+    .feature-icon-img {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        border-radius: 50%;
+        color: #fff;
+        box-shadow: 0 2px 8px 0 rgba(99,102,241,0.08);
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    body.dark-mode .feature-icon-img {
+        box-shadow: 0 2px 8px 0 rgba(31,38,135,0.18);
+        filter: brightness(0.95) saturate(1.1);
+    }
+    .feature-icon-img i {
+        color: #fff;
+        font-size: 2rem;
+        display: block;
+        margin: 0 auto;
+    }
+    .feature-icon-img:hover {
+        transform: scale(1.08) rotate(-3deg);
+        box-shadow: 0 4px 16px 0 rgba(99,102,241,0.18);
+    }
+    .btn-gradient-primary {
+        background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%);
+        color: #fff;
+        border: none;
+    }
+    .btn-gradient-primary:hover {
+        background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .btn-gradient-outline {
+        background: #fff;
+        color: #6366f1;
+        border: 2px solid #6366f1;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    body.dark-mode .btn-gradient-outline {
+        background: #23272f !important;
+        color: #a5b4fc !important;
+        border: 2px solid #6366f1 !important;
+    }
+    .btn-gradient-outline:hover {
+        background: #6366f1;
+        color: #fff;
+        border: 2px solid #6366f1;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .btn-gradient-warning {
+        background: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%);
+        color: #fff;
+        border: none;
+    }
+    .btn-gradient-warning:hover {
+        background: linear-gradient(90deg, #f59e42 0%, #fbbf24 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .description-modern {
+        color: #6b7280;
+        font-size: 1.15rem;
+        font-style: italic;
+        letter-spacing: 0.02em;
+        font-weight: 400;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        transition: color 0.2s;
+    }
+    body.dark-mode .description-modern {
+        color: #b6bdd6 !important;
+    }
+    .gradient-text {
+        background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+    }
+    .gradient-text-2 {
+        background: linear-gradient(90deg, #4f8cff 0%, #38bdf8 50%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+    }
+    body.dark-mode .gradient-text, body.dark-mode .gradient-text-2 {
+        filter: brightness(1.15) contrast(1.15) saturate(1.2);
+    }
+    /* SVG arka planı dark mode için filtrele ve daha koyu yap */
+    body.dark-mode svg {
+        filter: brightness(0.45) contrast(1.2) saturate(1.1) !important;
+    }
+    @media (max-width: 991px) {
+        .main-card { padding: 1.5rem !important; }
+        .card-body { padding: 1.5rem !important; }
+    }
+    @media (max-width: 767px) {
+        .main-card { border-radius: 1.2rem; }
+        .feature-card { border-radius: 1rem; }
+        h1.display-4 { font-size: 2.1rem !important; }
+    }
+    /* Temel Özellikler kartı için dark mode özel stilleri */
+    body.dark-mode .feature-card,
+    body.dark-mode .feature-card .card-body {
+        background: #232b36 !important;
+        color: #e5e7eb !important;
+        box-shadow: 0 2px 16px 0 #181c2340;
+    }
+    body.dark-mode .feature-card .gradient-text {
+        filter: brightness(1.25) contrast(1.2) saturate(1.2);
+        color: #7dd3fc !important;
+    }
+    body.dark-mode .feature-card .fw-bold {
+        color: #e0e7ff !important;
+        text-shadow: 0 1px 2px #181c23cc;
+    }
+    body.dark-mode .feature-card .text-muted {
+        color: #b6bdd6 !important;
+    }
+    body.dark-mode .feature-card .feature-icon-img {
+        filter: brightness(1.1) contrast(1.2) saturate(1.2);
+        box-shadow: 0 2px 8px 0 #181c2333;
+    }
+</style>
+{% endblock %} 

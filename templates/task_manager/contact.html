@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}İletişim{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 600px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white rounded-top-4" style="background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);">
+            <h2 class="mb-0 fw-bold d-flex align-items-center gap-2"><i class="fas fa-envelope"></i> İletişim</h2>
+        </div>
+        <div class="card-body p-4">
+            <p class="fs-5 mb-4">Herhangi bir sorun, öneri veya geri bildiriminiz için bize ulaşabilirsiniz. Size yardımcı olmaktan memnuniyet duyarız!</p>
+            <div class="mb-4">
+                <label class="form-label fs-6">E-posta adresimiz</label>
+                <div class="input-group">
+                    <input type="text" class="form-control form-control-lg rounded-start-3" id="contactEmail" value="info@görevtakip.com" readonly>
+                    <button class="btn btn-primary rounded-end-3" type="button" onclick="copyEmail()"><i class="fas fa-copy"></i> Kopyala</button>
+                </div>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fs-6">Geliştiriciler</label>
+                <ul class="list-unstyled mb-0">
+                    <li class="d-flex align-items-center gap-2 mb-2"><i class="fas fa-user-circle fa-lg text-primary"></i> <span class="fw-semibold">Doğukan Güler</span></li>
+                    <li class="d-flex align-items-center gap-2"><i class="fas fa-user-circle fa-lg text-primary"></i> <span class="fw-semibold">Kava Vurgun</span></li>
+                </ul>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fs-6">Sosyal Medya</label>
+                <div class="d-flex gap-3">
+                    <a href="#" class="text-secondary fs-4" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" class="text-primary fs-4" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="text-info fs-4" title="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="text-muted small mt-4">
+                <span>Uygulama Sürümü: v1.0.0</span> &middot; <a href="#" class="text-muted">Gizlilik Politikası</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function copyEmail() {
+    var copyText = document.getElementById("contactEmail");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // mobile
+    document.execCommand("copy");
+    alert("E-posta adresi kopyalandı!");
+}
+</script>
+<style>
+.card-header.bg-gradient {
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 2px 12px #2563eb11 !important;
+}
+input, textarea {
+    border-radius: 0.7rem !important;
+}
+.btn {
+    border-radius: 0.7rem !important;
+    font-weight: 500;
+}
+body.dark-mode .card {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .card-header.bg-gradient {
+    background: linear-gradient(90deg, #232b36 0%, #2563eb 100%) !important;
+    color: #fff !important;
+}
+</style>
+{% endblock %} 

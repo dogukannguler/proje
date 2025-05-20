@@ -1,0 +1,31 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('tasks/', views.task_list, name='task_list'),
+    path('tasks/create/', views.task_create, name='task_create'),
+    path('tasks/<int:pk>/', views.task_detail, name='task_detail'),
+    path('tasks/<int:pk>/edit/', views.task_edit, name='task_edit'),
+    path('tasks/<int:pk>/delete/', views.task_delete, name='task_delete'),
+    path('calendar/', views.calendar_view, name='calendar'),
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/create/', views.category_create, name='category_create'),
+    path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
+    path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
+    path('statistics/', views.statistics_view, name='statistics'),
+    path('tasks/update-datetime/', views.update_task_datetime, name='update_task_datetime'),
+    path('groups/', views.group_list, name='group_list'),
+    path('groups/create/', views.group_create, name='group_create'),
+    path('groups/<int:group_id>/', views.group_detail, name='group_detail'),
+    path('groups/<int:group_id>/add_member/', views.group_add_member, name='group_add_member'),
+    path('groups/<int:group_id>/tasks/<int:task_id>/edit/', views.group_task_edit, name='group_task_edit'),
+    path('groups/<int:group_id>/tasks/<int:task_id>/delete/', views.group_task_delete, name='group_task_delete'),
+    path('groups/<int:group_id>/posts/<int:post_id>/edit/', views.group_post_edit, name='group_post_edit'),
+    path('groups/<int:group_id>/posts/<int:post_id>/delete/', views.group_post_delete, name='group_post_delete'),
+    path('groups/<int:group_id>/comments/<int:comment_id>/edit/', views.group_comment_edit, name='group_comment_edit'),
+    path('groups/<int:group_id>/comments/<int:comment_id>/delete/', views.group_comment_delete, name='group_comment_delete'),
+    path('groups/<int:group_id>/leave/', views.leave_group, name='leave_group'),
+    path('groups/<int:group_id>/calendar/', views.group_calendar, name='group_calendar'),
+    path('help/', views.help_page, name='help'),
+] 

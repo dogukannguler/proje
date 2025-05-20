@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Yorumu Sil{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Yorumu Sil</h3>
+    <div class="alert alert-danger">Bu yorumu silmek istediğinize emin misiniz?</div>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="tab" value="posts">
+        <button type="submit" class="btn btn-danger">Evet, Sil</button>
+        <a href="{% url 'group_detail' group.id %}?tab=posts" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+{% endblock %} 

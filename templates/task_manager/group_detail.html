@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+{% block title %}{{ group.name }} | Grup{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <!-- Grup Başlık Kartı -->
+    <div class="card shadow-lg mb-4 border-0 rounded-4 bg-gradient" style="background: linear-gradient(90deg, #e0e7ff 0%, #b4d8fd 100%);">
+        <div class="card-body d-flex flex-column flex-md-row align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 64px; height: 64px; font-size: 2.2rem; font-weight: 700; box-shadow: 0 2px 12px #2563eb33;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold">{{ group.name }}</h2>
+                    <div class="text-muted small">{{ group.description|default:'Açıklama yok.' }}</div>
+                </div>
+            </div>
+            <div class="ms-md-auto d-flex flex-column align-items-end gap-2">
+                <span class="badge bg-primary px-3 py-2 fs-6"><i class="fas fa-user-friends me-1"></i> {{ members.count }} Üye</span>
+                <span class="badge bg-light text-dark border px-3 py-2"><i class="fas fa-calendar-alt me-1"></i> {{ group.created_at|date:'d.m.Y' }}</span>
+                {% if is_member %}
+                <form id="leaveGroupForm" method="post" action="{% url 'leave_group' group.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-3 px-3" onclick="confirmLeaveGroup()">
+                        <i class="fas fa-sign-out-alt me-1"></i> Gruptan Ayrıl
+                    </button>
+                </form>
+                <script>
+                function confirmLeaveGroup() {
+                    if (confirm('Gruptan ayrılmak istiyor musunuz?')) {
+                        document.getElementById('leaveGroupForm').submit();
+                    }
+                }
+                </script>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Sekmeler -->
+    <ul class="nav nav-pills nav-justified mb-4 shadow-sm rounded-4 overflow-hidden" id="groupTabs" role="tablist" style="background: #f5f6fa;">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link py-3 px-4 fs-5 {% if active_tab == 'tasks' %}active{% endif %}" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab"><i class="fas fa-tasks me-2"></i>Görevler</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link py-3 px-4 fs-5 {% if active_tab == 'posts' %}active{% endif %}" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab"><i class="fas fa-comments me-2"></i>Paylaşımlar</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link py-3 px-4 fs-5 {% if active_tab == 'members' %}active{% endif %}" id="members-tab" data-bs-toggle="tab" data-bs-target="#members" type="button" role="tab"><i class="fas fa-user-friends me-2"></i>Üyeler</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link py-3 px-4 fs-5 {% if active_tab == 'calendar' %}active{% endif %}" href="{% url 'group_calendar' group.id %}"><i class="fas fa-calendar-alt me-2"></i>Takvim</a>
+        </li>
+    </ul>
+    <div class="tab-content" id="groupTabsContent">
+        <!-- Görevler -->
+        <div class="tab-pane fade {% if active_tab == 'tasks' %}show active{% endif %}" id="tasks" role="tabpanel">
+            <div class="mb-4">
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="tab" value="tasks">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <input type="text" name="task_title" class="form-control form-control-lg rounded-3" placeholder="Görev başlığı" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="task_description" class="form-control form-control-lg rounded-3" placeholder="Açıklama">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="task_assigned_to" class="form-select form-select-lg rounded-3">
+                                <option value="">Sorumlu Seç (isteğe bağlı)</option>
+                                {% for m in members %}
+                                <option value="{{ m.user.id }}">{{ m.user.get_full_name|default:m.user.username }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="submit" name="add_task" class="btn btn-success btn-lg w-100 rounded-3"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="row g-3">
+                {% for task in tasks %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card border-0 shadow-sm rounded-4 h-100">
+                        <div class="card-body d-flex flex-column gap-2">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge status-{% if task.status == 'in_progress' %}in-progress{% elif task.status == 'completed' and task.due_date < now %}completed-overdue{% else %}{{ task.status|lower }}{% endif %} px-3 py-2 fs-6">
+                                    <i class="fas fa-circle me-1"></i> {{ task.get_status_display }}
+                                </span>
+                                {% if task.due_date < now %}
+                                    <span class="badge bg-danger ms-2">Tarihi Geçti</span>
+                                {% endif %}
+                                <div class="ms-auto">
+                                    {% if user.is_authenticated and is_member %}
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editGroupTaskModal{{ task.id }}" title="Düzenle"><i class="fas fa-edit"></i></button>
+                                        <form method="post" action="{% url 'group_task_delete' group.id task.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="tab" value="tasks">
+                                            <button type="submit" class="btn btn-outline-danger" title="Sil" onclick="return confirm('Bu görevi silmek istediğinize emin misiniz?');"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <h5 class="fw-bold mb-1">{{ task.title }}</h5>
+                            <div class="text-muted small mb-2">{{ task.description|truncatewords:12 }}</div>
+                            <div class="d-flex align-items-center gap-2 mt-auto">
+                                {% if task.assigned_to %}
+                                    <img src="{{ task.assigned_to.profile_picture.url }}" class="rounded-circle" width="32" height="32" style="object-fit:cover;">
+                                    <span class="fw-semibold">{{ task.assigned_to.get_full_name|default:task.assigned_to.username }}</span>
+                                {% else %}
+                                    <span class="text-muted">Sorumlu Yok</span>
+                                {% endif %}
+                                <span class="ms-auto text-muted small"><i class="fas fa-calendar-alt me-1"></i> {{ task.due_date|date:'d.m.Y H:i' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Düzenle Modalı -->
+                    <div class="modal fade" id="editGroupTaskModal{{ task.id }}" tabindex="-1" aria-labelledby="editGroupTaskModalLabel{{ task.id }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form method="post" action="{% url 'group_task_edit' group.id task.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="tab" value="tasks">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="editGroupTaskModalLabel{{ task.id }}">Görevi Düzenle</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-2">
+                                <label class="form-label">Başlık</label>
+                                <input type="text" class="form-control" name="title" value="{{ task.title }}" required>
+                              </div>
+                              <div class="mb-2">
+                                <label class="form-label">Açıklama</label>
+                                <textarea class="form-control" name="description">{{ task.description }}</textarea>
+                              </div>
+                              <div class="mb-2">
+                                <label class="form-label">Sorumlu</label>
+                                <select class="form-select" name="assigned_to">
+                                  <option value="">Seçiniz</option>
+                                  {% for m in members %}
+                                  <option value="{{ m.user.id }}" {% if task.assigned_to and task.assigned_to.id == m.user.id %}selected{% endif %}>{{ m.user.get_full_name|default:m.user.username }}</option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                              <div class="mb-2">
+                                <label class="form-label">Durum</label>
+                                <select class="form-select" name="status">
+                                  <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>Yapılacak</option>
+                                  <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>Devam Ediyor</option>
+                                  <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Tamamlandı</option>
+                                </select>
+                              </div>
+                              <div class="mb-2">
+                                <label class="form-label">Teslim Tarihi</label>
+                                <input type="datetime-local" class="form-control" name="due_date" value="{{ task.due_date|date:'Y-m-d\\TH:i' }}">
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                              <button type="submit" class="btn btn-primary">Kaydet</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center text-muted">Henüz görev yok.</div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Paylaşımlar -->
+        <div class="tab-pane fade {% if active_tab == 'posts' %}show active{% endif %}" id="posts" role="tabpanel">
+            <form method="post" action="" class="mb-4" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="tab" value="posts">
+                {{ post_form.non_field_errors }}
+                <div class="mb-3">
+                    {{ post_form.content.label_tag }}
+                    {{ post_form.content }}
+                    {{ post_form.content.errors }}
+                </div>
+                <div class="row g-3 align-items-center mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Görsel Ekle</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white"><i class="fas fa-image"></i></span>
+                            {{ post_form.image }}
+                        </div>
+                        <div id="imagePreview" class="mt-2"></div>
+                        {{ post_form.image.errors }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Döküman Ekle</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-secondary text-white"><i class="fas fa-file-alt"></i></span>
+                            {{ post_form.file }}
+                        </div>
+                        {{ post_form.file.errors }}
+                    </div>
+                </div>
+                <button type="submit" name="add_post" class="btn btn-primary btn-lg rounded-3 px-4"><i class="fas fa-paper-plane me-2"></i>Paylaş</button>
+            </form>
+            <script>
+            // Görsel önizleme
+            const imageInput = document.getElementById('id_image');
+            const imagePreview = document.getElementById('imagePreview');
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    imagePreview.innerHTML = '';
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.innerHTML = `<img src="${e.target.result}" class="img-fluid rounded-3 mt-2" style="max-height:180px;" alt="Önizleme">`;
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            }
+            </script>
+            <hr>
+            <div class="row g-3">
+                {% for post in posts %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4 mb-3">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2 gap-2">
+                                {% if post.user.profile_picture %}
+                                    <img src="{{ post.user.profile_picture.url }}" class="rounded-circle me-2" width="40" height="40" style="object-fit:cover;">
+                                {% else %}
+                                    <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="40" height="40">
+                                {% endif %}
+                                <strong class="fs-5">{{ post.user.get_full_name|default:post.user.username }}</strong>
+                                <span class="text-muted small ms-2">{{ post.created_at|timesince }} önce</span>
+                                {% if post.is_pinned %}
+                                    <span class="badge bg-warning text-dark ms-2"><i class="fas fa-thumbtack"></i> Sabit</span>
+                                {% endif %}
+                                <div class="ms-auto d-flex align-items-center gap-2">
+                                    {% if user.is_authenticated and user.id == post.user.id %}
+                                        <form method="post" action="" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pin_post_id" value="{{ post.id }}">
+                                            <button type="submit" class="btn btn-outline-warning btn-sm" title="{{ post.is_pinned|yesno:'Sabitliği Kaldır,Sabitle' }}">
+                                                <i class="fas fa-thumbtack"></i> {{ post.is_pinned|yesno:'Kaldır,Sabitle' }}
+                                            </button>
+                                        </form>
+                                    {% elif user.is_authenticated and is_admin %}
+                                        <form method="post" action="" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="pin_post_id" value="{{ post.id }}">
+                                            <button type="submit" class="btn btn-outline-warning btn-sm" title="{{ post.is_pinned|yesno:'Sabitliği Kaldır,Sabitle' }}">
+                                                <i class="fas fa-thumbtack"></i> {{ post.is_pinned|yesno:'Kaldır,Sabitle' }}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    {% if user.is_authenticated and user.id == post.user.id %}
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'group_post_edit' group.id post.id %}" class="btn btn-outline-primary btn-sm" title="Düzenle"><i class="fas fa-edit"></i></a>
+                                            <form method="post" action="{% url 'group_post_delete' group.id post.id %}" style="display:inline;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="tab" value="posts">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Sil" onclick="return confirm('Bu paylaşımı silmek istediğinize emin misiniz?');"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="fs-5 mb-2">{{ post.content }}</div>
+                            {% if post.image %}
+                                <div class="mb-2"><img src="{{ post.image.url }}" alt="Görsel" class="img-fluid rounded-3" style="max-height:300px;"></div>
+                            {% endif %}
+                            {% if post.file %}
+                                <div class="mb-2"><a href="{{ post.file.url }}" target="_blank" class="btn btn-outline-secondary"><i class="fas fa-file-alt me-2"></i>Dökümanı Görüntüle/İndir</a></div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-light rounded-bottom-4">
+                            {% for comment in post.comments.all %}
+                            <div class="d-flex align-items-center mb-2 gap-2">
+                                {% if comment.user.profile_picture %}
+                                    <img src="{{ comment.user.profile_picture.url }}" class="rounded-circle me-2" width="28" height="28" style="object-fit:cover;">
+                                {% else %}
+                                    <img src="/static/img/default-avatar.png" class="rounded-circle me-2" width="28" height="28">
+                                {% endif %}
+                                <span class="fw-semibold">{{ comment.user.get_full_name|default:comment.user.username }}</span>
+                                <span class="text-muted small ms-2">{{ comment.created_at|timesince }} önce</span>
+                                <span class="ms-2">{{ comment.content }}</span>
+                                {% if user.is_authenticated and user.id == comment.user.id %}
+                                    <div class="ms-auto btn-group btn-group-sm">
+                                        <a href="{% url 'group_comment_edit' group.id comment.id %}" class="btn btn-outline-primary btn-sm" title="Düzenle"><i class="fas fa-edit"></i></a>
+                                        <form method="post" action="{% url 'group_comment_delete' group.id comment.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="tab" value="posts">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Sil" onclick="return confirm('Bu yorumu silmek istediğinize emin misiniz?');"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            <form method="post" action="" class="mt-2">
+                                {% csrf_token %}
+                                <input type="hidden" name="tab" value="posts">
+                                <input type="hidden" name="comment_post_id" value="{{ post.id }}">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" name="comment_content" class="form-control rounded-3" placeholder="Yorum yaz..." required>
+                                    <button type="submit" name="add_comment" class="btn btn-outline-secondary rounded-3"><i class="fas fa-paper-plane"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center text-muted">Henüz paylaşım yok.</div>
+                {% endfor %}
+            </div>
+        </div>
+        <!-- Üyeler -->
+        <div class="tab-pane fade {% if active_tab == 'members' %}show active{% endif %}" id="members" role="tabpanel">
+            <div class="row g-3">
+                {% for m in members %}
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card border-0 shadow-sm rounded-4 d-flex flex-column align-items-center p-3 gap-2">
+                        {% if m.user.profile_picture %}
+                            <img src="{{ m.user.profile_picture.url }}" class="rounded-circle mb-2" width="56" height="56" style="object-fit:cover;">
+                        {% else %}
+                            <img src="/static/img/default-avatar.png" class="rounded-circle mb-2" width="56" height="56">
+                        {% endif %}
+                        <span class="fw-semibold fs-5">{{ m.user.get_full_name|default:m.user.username }}</span>
+                        {% if m.role == 'admin' %}
+                        <span class="badge bg-primary">Yönetici</span>
+                        {% else %}
+                        <span class="badge bg-secondary">Üye</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% if user.is_authenticated and is_admin %}
+            <div class="mt-4 text-center">
+                <button class="btn btn-primary btn-lg rounded-3" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+                    <i class="fas fa-user-plus"></i> Üye Ekle
+                </button>
+            </div>
+            <!-- Üye Ekle Modalı -->
+            <div class="modal fade" id="addMemberModal" tabindex="-1" aria-labelledby="addMemberModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="post" action="{% url 'group_add_member' group.id %}">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="addMemberModalLabel">Gruba Üye Ekle</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="username_or_email" class="form-label">Kullanıcı Adı veya E-posta</label>
+                        <input type="text" class="form-control" id="username_or_email" name="username_or_email" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                      <button type="submit" class="btn btn-primary">Ekle</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<style>
+/* Modern ve şık grup detay sayfası için ek CSS */
+.nav-pills .nav-link {
+    border-radius: 2rem;
+    margin: 0 0.2rem;
+    font-weight: 600;
+    transition: background 0.18s, color 0.18s;
+}
+.nav-pills .nav-link.active {
+    background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 12px #2563eb33;
+}
+.nav-pills .nav-link:not(.active):hover {
+    background: #e0e7ff !important;
+    color: #2563eb !important;
+}
+.card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 2px 12px #2563eb11 !important;
+}
+.card-footer {
+    border-radius: 0 0 1.5rem 1.5rem !important;
+}
+input, textarea, select {
+    border-radius: 0.7rem !important;
+}
+.btn {
+    border-radius: 0.7rem !important;
+    font-weight: 500;
+}
+.btn-outline-primary, .btn-outline-danger {
+    background: #fff !important;
+}
+.btn-outline-primary:hover, .btn-outline-danger:hover {
+    background: #2563eb !important;
+    color: #fff !important;
+}
+.badge {
+    border-radius: 1rem !important;
+    font-size: 1em !important;
+    font-weight: 600;
+    padding: 0.4em 1em !important;
+}
+body.dark-mode .card, body.dark-mode .card-footer {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .nav-pills .nav-link.active {
+    background: linear-gradient(90deg, #2563eb 0%, #60a5fa 100%) !important;
+    color: #fff !important;
+}
+body.dark-mode .nav-pills .nav-link:not(.active):hover {
+    background: #31343a !important;
+    color: #60a5fa !important;
+}
+body.dark-mode .bg-light {
+    background: #232b36 !important;
+}
+body.dark-mode .bg-primary {
+    background: #2563eb !important;
+}
+body.dark-mode .bg-secondary {
+    background: #31343a !important;
+}
+body.dark-mode .btn-outline-primary, body.dark-mode .btn-outline-danger {
+    background: #232b36 !important;
+}
+body.dark-mode .btn-outline-primary:hover, body.dark-mode .btn-outline-danger:hover {
+    background: #2563eb !important;
+    color: #fff !important;
+}
+</style>
+{% endblock %} 

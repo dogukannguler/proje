@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Kayıt Ol{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Kayıt Ol</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Profil Fotoğrafı -->
+                    <div class="mb-4">
+                        <label class="form-label">Profil Fotoğrafı</label>
+                        <!-- Hazır Avatarlar -->
+                        <div class="mb-3">
+                            <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                {% for i in "12345678" %}
+                                <div class="avatar-option">
+                                    <input type="radio" class="btn-check" name="avatar_choice" id="avatar{{ i }}" value="default_avatar_{{ i }}.png" {% if forloop.first %}checked{% endif %}>
+                                    <label class="btn btn-outline-primary p-1" for="avatar{{ i }}">
+                                        <img src="{% static 'avatars/default_avatar_'|add:i|add:'.png' %}" alt="Avatar {{ i }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <!-- Özel Fotoğraf Yükleme -->
+                        <div class="custom-file mt-3">
+                            <label class="form-label">veya kendi fotoğrafınızı yükleyin</label>
+                            {{ form.profile_picture }}
+                            <div class="form-text text-muted">
+                                Maksimum dosya boyutu: 5MB
+                            </div>
+                            {% if form.profile_picture.errors %}
+                                <div class="alert alert-danger mt-2">
+                                    {{ form.profile_picture.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Diğer Form Alanları -->
+                    {% for field in form %}
+                        {% if field.name != 'profile_picture' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="alert alert-danger">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Zaten hesabınız var mı? <a href="{% url 'login' %}">Giriş Yap</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-option input[type="radio"] {
+    display: none;
+}
+.avatar-option input[type="radio"]:checked + label {
+    border: 3px solid #0d6efd;
+    border-radius: 50%;
+}
+.avatar-option label {
+    cursor: pointer;
+    padding: 2px;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+.avatar-option label:hover {
+    transform: scale(1.1);
+}
+</style>
+{% endblock %} 

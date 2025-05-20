@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Takvim{% endblock %}
+
+{% block extra_css %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Takvim</h4>
+        <a href="{% url 'task_create' %}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Yeni Görev
+        </a>
+    </div>
+    <div class="card-body">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<div class="modal fade" id="timeModal" tabindex="-1" aria-labelledby="timeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="timeModalLabel">Yeni Saat Seç</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+      </div>
+      <div class="modal-body">
+        <input type="time" class="form-control" id="newTimeInput">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+        <button type="button" class="btn btn-primary" id="saveTimeBtn">Kaydet</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script>
+let draggedTaskId = null;
+let draggedNewDate = null;
+let draggedOldTime = null;
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'tr',
+        editable: true,
+        eventStartEditable: true,
+        eventDurationEditable: false,
+        buttonText: {
+            today: 'Bugün',
+            month: 'Ay',
+            week: 'Hafta',
+            day: 'Gün'
+        },
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: [
+            {% for task in tasks %}
+            {
+                id: '{{ task.id }}',
+                title: '{{ task.title }}{% if task.due_date < now %} (Tarihi Geçti){% endif %}',
+                start: '{{ task.due_date|date:"Y-m-d" }}',
+                url: '{% url "task_detail" task.id %}',
+                backgroundColor: '{{ task.category.color|default:"#6366f1" }}',
+                borderColor: '{{ task.category.color|default:"#6366f1" }}',
+                textColor: '#fff',
+                extendedProps: {
+                    time: '{{ task.due_date|date:"H:i" }}'
+                }
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        eventDrop: function(info) {
+            draggedTaskId = info.event.id;
+            draggedNewDate = info.event.startStr.split('T')[0];
+            draggedOldTime = info.event.extendedProps.time;
+            document.getElementById('newTimeInput').value = draggedOldTime;
+            var modal = new bootstrap.Modal(document.getElementById('timeModal'));
+            modal.show();
+        }
+    });
+    calendar.render();
+
+    document.getElementById('saveTimeBtn').onclick = function() {
+        var newTime = document.getElementById('newTimeInput').value;
+        fetch('{% url "update_task_datetime" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                task_id: draggedTaskId,
+                date: draggedNewDate,
+                time: newTime
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Hata: ' + (data.error || 'Tarih güncellenemedi.'));
+            }
+        });
+    };
+});
+</script>
+{% endblock %} 

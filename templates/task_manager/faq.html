@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block title %}Sıkça Sorulan Sorular{% endblock %}
+{% block content %}
+<div class="container mt-5" style="max-width: 700px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white rounded-top-4" style="background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);">
+            <h2 class="mb-0 fw-bold d-flex align-items-center gap-2"><i class="fas fa-question-circle"></i> Sıkça Sorulan Sorular (SSS)</h2>
+        </div>
+        <div class="card-body p-4">
+            <div class="accordion" id="faqAccordion">
+                <!-- Kişisel Kullanım Soruları -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq1">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                            Görev eklemek ve yönetmek için ne yapmalıyım?
+                        </button>
+                    </h2>
+                    <div id="collapse1" class="accordion-collapse collapse show" aria-labelledby="faq1" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>Sol menüden "Görevlerim" bölümüne gidin.</li>
+                                <li>"Yeni Görev" butonuna tıklayarak görev ekleyebilirsiniz.</li>
+                                <li>Eklediğiniz görevleri düzenleyebilir, silebilir veya tamamlandı olarak işaretleyebilirsiniz.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq2">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                            Görevlerim için bildirim alabilir miyim?
+                        </button>
+                    </h2>
+                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="faq2" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>Yaklaşan ve geciken görevler için anlık bildirimler alırsınız.</li>
+                                <li>Bildirimler sağ üstte zil simgesiyle gösterilir ve yeni bildirimler için kırmızı bir rozet çıkar.</li>
+                                <li>Bildirim sesi ve toast ile de uyarı alırsınız.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq3">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                            Takvim görünümünde görevlerimi görebilir miyim?
+                        </button>
+                    </h2>
+                    <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="faq3" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>"Takvim" sekmesinden tüm görevlerinizi takvim üzerinde görebilirsiniz.</li>
+                                <li>Görevlerin teslim tarihleri ve durumları renkli olarak gösterilir.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Grup Kullanımı Soruları -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq4">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                            Grup oluşturmak ve gruba üye eklemek için ne yapmalıyım?
+                        </button>
+                    </h2>
+                    <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="faq4" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>"Gruplar" bölümünden "Yeni Grup Oluştur" butonuna tıklayın.</li>
+                                <li>Grup oluşturduktan sonra, grup detayında "Üye Ekle" butonuyla kullanıcı adı veya e-posta ile üye ekleyebilirsiniz.</li>
+                                <li>Yalnızca grup yöneticileri üye ekleyebilir.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq5">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                            Grup takviminde neleri görebilirim?
+                        </button>
+                    </h2>
+                    <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="faq5" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>Grup takviminde, o gruba ait tüm görevleri ve hangi üyenin hangi görevi üstlendiğini görebilirsiniz.</li>
+                                <li>Görevlerin detayına tıklayarak sorumlu kişiyi ve açıklamayı görebilirsiniz.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq6">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                            Gruptan nasıl ayrılırım?
+                        </button>
+                    </h2>
+                    <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="faq6" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>Grup detay sayfasında sağ üstteki "Gruptan Ayrıl" butonunu kullanarak gruptan ayrılabilirsiniz.</li>
+                                <li>Ayrıldığınız grup "Gruplarım" listesinden otomatik olarak silinir.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq7">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                            Grup içinde paylaşım ve yorum yapabilir miyim?
+                        </button>
+                    </h2>
+                    <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="faq7" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            <ul>
+                                <li>Grup detayında "Paylaşımlar" sekmesinden yeni paylaşım ekleyebilir ve mevcut paylaşımlara yorum yapabilirsiniz.</li>
+                                <li>Kendi paylaşımlarınızı ve yorumlarınızı düzenleyebilir veya silebilirsiniz.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-muted small mt-4 text-end">
+                <span>Uygulama Sürümü: v1.0.0</span>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.card-header.bg-gradient {
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 2px 12px #2563eb11 !important;
+}
+.accordion-button {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+body.dark-mode .card {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .card-header.bg-gradient {
+    background: linear-gradient(90deg, #232b36 0%, #2563eb 100%) !important;
+    color: #fff !important;
+}
+body.dark-mode .accordion-button {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .accordion-body {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+</style>
+{% endblock %} 

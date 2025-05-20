@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Giriş Yap{% endblock %}
+
+{% block content %}
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+<!-- Dekoratif SVG Dalga Arka Plan -->
+<div style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;">
+    <svg width="100%" height="100%" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="login-bg-gradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#e0e7ff"/>
+                <stop offset="100%" stop-color="#f0fdfa"/>
+            </linearGradient>
+        </defs>
+        <rect width="1440" height="600" fill="url(#login-bg-gradient)"/>
+        <path d="M0,400 Q720,600 1440,400 L1440,600 L0,600 Z" fill="#38bdf8" fill-opacity="0.10"/>
+        <circle cx="1200" cy="100" r="80" fill="#6366f1" fill-opacity="0.10"/>
+        <circle cx="200" cy="80" r="60" fill="#a78bfa" fill-opacity="0.08"/>
+    </svg>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-80" style="min-height: 80vh;">
+        <div class="col-md-7 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-5 p-4 login-card">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <span class="login-icon mb-3"><i class="fas fa-user-circle"></i></span>
+                        <h2 class="fw-bold gradient-text-2 mb-2" style="font-family: 'Inter', sans-serif;">Giriş Yap</h2>
+                        <p class="text-muted mb-0" style="font-size:1.1rem;">Görevlerinizi yönetmek için hesabınıza giriş yapın</p>
+                    </div>
+                    <form method="post" class="needs-validation" novalidate autocomplete="username">
+                        {% csrf_token %}
+                        <div class="form-floating mb-3">
+                            <input type="text" name="username" id="id_username" class="form-control" placeholder="Kullanıcı adı" required autofocus>
+                            <label for="id_username">Kullanıcı adı</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" name="password" id="id_password" class="form-control" placeholder="Parola" required autocomplete="current-password">
+                            <label for="id_password">Parola</label>
+                        </div>
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                        {% endif %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-gradient-primary btn-lg rounded-pill">
+                                <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 bg-transparent border-0">
+                    <div class="small">
+                        Hesabınız yok mu? <a href="{% url 'register' %}" class="text-primary fw-semibold">Hemen Kayıt Olun</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: none !important;
+    }
+    body.dark-mode {
+        background: #181c23 !important;
+    }
+    .login-card {
+        background: rgba(255,255,255,0.97);
+        border-radius: 2rem;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+        transition: background 0.2s, color 0.2s;
+    }
+    body.dark-mode .login-card {
+        background: rgba(35,39,47,0.98) !important;
+        color: #e5e7eb !important;
+    }
+    .login-icon {
+        display: inline-block;
+        font-size: 3.5rem;
+        color: #38bdf8;
+        background: linear-gradient(135deg, #6366f1 0%, #38bdf8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+    .gradient-text-2 {
+        background: linear-gradient(90deg, #4f8cff 0%, #38bdf8 50%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-fill-color: transparent;
+    }
+    body.dark-mode .gradient-text-2 {
+        filter: brightness(1.15) contrast(1.15) saturate(1.2);
+    }
+    .form-floating > .form-control {
+        padding: 1rem 0.75rem;
+        height: calc(3.5rem + 2px);
+        line-height: 1.25;
+        font-size: 1.1rem;
+        background: #f8fafc;
+        border-radius: 1rem;
+        color: #22292f;
+        transition: background 0.2s, color 0.2s;
+    }
+    body.dark-mode .form-floating > .form-control {
+        background: #232b36 !important;
+        color: #e5e7eb !important;
+        border: 1px solid #31343a;
+    }
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+        font-size: 1.05rem;
+        color: #6b7280;
+        transition: color 0.2s;
+    }
+    body.dark-mode .form-floating > label {
+        color: #b6bdd6 !important;
+    }
+    .btn-gradient-primary {
+        background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%);
+        color: #fff;
+        border: none;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        box-shadow: 0 2px 8px 0 rgba(99,102,241,0.08);
+        transition: all 0.2s;
+    }
+    .btn-gradient-primary:hover {
+        background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+        color: #fff;
+        transform: translateY(-2px) scale(1.04);
+    }
+    .invalid-feedback {
+        font-size: 0.95rem;
+    }
+    body.dark-mode svg {
+        filter: brightness(0.45) contrast(1.2) saturate(1.1) !important;
+    }
+    @media (max-width: 991px) {
+        .login-card { padding: 1.2rem !important; }
+        .card-body { padding: 1.2rem !important; }
+    }
+    @media (max-width: 767px) {
+        .login-card { border-radius: 1rem; }
+        h2 { font-size: 1.7rem !important; }
+    }
+</style>
+{% endblock %} 

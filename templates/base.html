@@ -1,0 +1,610 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Görev Takip Sistemi{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f6fa;
+            --accent-color: #2ecc71;
+            --text-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --navbar-bg: #fff;
+            --sidebar-bg: #fff;
+            --card-bg: #fff;
+            --input-bg: #f8fafc;
+            --border-color: #e5e7eb;
+            --dropdown-bg: #fff;
+            --dropdown-hover-bg: #f5f6fa;
+            --table-bg: #fff;
+            --table-header-bg: #f5f6fa;
+            --table-border: #e5e7eb;
+            --alert-bg: #f8fafc;
+            --alert-text: #2c3e50;
+            --badge-bg: #e0e7ff;
+            --modal-bg: #fff;
+            --modal-header-bg: #f5f6fa;
+            --modal-border: #e5e7eb;
+        }
+        body.dark-mode {
+            --primary-color: #4a90e2;
+            --secondary-color: #181c23;
+            --accent-color: #2ecc71;
+            --text-color: #e5e7eb;
+            --danger-color: #e74c3c;
+            --warning-color: #f1c40f;
+            --navbar-bg: #23272f;
+            --sidebar-bg: #23272f;
+            --card-bg: #23272f;
+            --input-bg: #23272f;
+            --border-color: #31343a;
+            --dropdown-bg: #23272f;
+            --dropdown-hover-bg: #31343a;
+            --table-bg: #23272f;
+            --table-header-bg: #232b36;
+            --table-border: #31343a;
+            --alert-bg: #232b36;
+            --alert-text: #e5e7eb;
+            --badge-bg: #31343a;
+            --modal-bg: #23272f;
+            --modal-header-bg: #232b36;
+            --modal-border: #31343a;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color) !important;
+            color: var(--text-color) !important;
+            transition: background 0.2s, color 0.2s;
+        }
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+            font-size: 1.55rem;
+            letter-spacing: 0.3px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            transition: transform 0.2s, background 0.2s, color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-primary:hover {
+            background-color: #357abd;
+            border-color: #357abd;
+        }
+        .badge {
+            padding: 0.5em 0.8em;
+            font-weight: 500;
+        }
+        .task-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        .status-todo { background-color: #e9ecef; color: #495057; }
+        .status-in-progress,
+        .badge.status-in-progress {
+            background-color: #ffe066 !important;
+            color: #7c5c00 !important;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 0.25em 0.7em;
+        }
+        .status-done { background-color: #d4edda; color: #155724; }
+        .priority-high { background-color: #f8d7da; color: #721c24; }
+        .priority-medium { background-color: #fff3cd; color: #856404; }
+        .priority-low { background-color: #d4edda; color: #155724; }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50%;
+            background-color: var(--danger-color);
+            color: white;
+            font-size: 0.75rem;
+        }
+        .sidebar {
+            background-color: var(--sidebar-bg) !important;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+        }
+        .sidebar .nav-link {
+            color: var(--text-color) !important;
+            padding: 0.85rem 1rem;
+            border-radius: 7px;
+            margin: 0.22rem 0;
+            font-size: 1.05rem;
+            font-weight: 500;
+            transition: background 0.18s, color 0.18s, font-size 0.18s;
+        }
+        .sidebar .nav-link:hover {
+            background: linear-gradient(90deg, #e0e7ff 0%, #b4d8fd 100%);
+            color: #2563eb;
+            font-size: 1.10rem;
+        }
+        .sidebar .nav-link.active {
+            background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);
+            color: #fff;
+            font-size: 1.10rem;
+        }
+        .sidebar .nav-link i {
+            margin-right: 0.55rem;
+            width: 21px;
+            text-align: center;
+            font-size: 1.13em;
+        }
+        select.form-select-sm {
+            font-size: 0.95rem;
+            padding: 0.25rem 0.75rem;
+            max-width: 320px;
+            min-width: 160px;
+            border-radius: 6px;
+        }
+        select.form-select-sm:focus {
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 2px #4a90e233;
+        }
+        .badge.status-in-progress,
+        .status-in-progress {
+            background-color: #ffe066 !important;
+            color: #7c5c00 !important;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 0.25em 0.7em;
+        }
+        .navbar-nav .nav-link {
+            font-size: 1.07rem;
+            font-weight: 500;
+            padding-top: 0.48rem;
+            padding-bottom: 0.48rem;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-nav .nav-link i {
+            font-size: 1.11em;
+            margin-right: 0.28em;
+        }
+        .navbar-nav .dropdown-toggle, .navbar-nav .nav-link .fa-bell {
+            font-size: 1.13rem;
+        }
+        .navbar-nav .fa-bell {
+            font-size: 1.32em;
+        }
+        .navbar-nav .rounded-circle {
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px;
+            min-height: 38px;
+        }
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+        }
+        .navbar-nav .fa-bell {
+            font-size: 1.55em;
+            vertical-align: middle;
+            margin-bottom: 2px;
+        }
+        .form-control, .form-select {
+            background: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            background: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .navbar, .sidebar, .card, .form-control, .form-select {
+            transition: background 0.2s, color 0.2s;
+        }
+        .sidebar .nav-link, .navbar-nav .nav-link {
+            color: var(--text-color) !important;
+        }
+        .sidebar .nav-link.active {
+            color: #fff !important;
+        }
+        .dropdown-menu {
+            background: var(--dropdown-bg) !important;
+            color: var(--text-color) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        .dropdown-item {
+            color: var(--text-color) !important;
+        }
+        .dropdown-item:hover, .dropdown-item:focus {
+            background: var(--dropdown-hover-bg) !important;
+            color: var(--primary-color) !important;
+        }
+        .btn-primary, .btn-success, .btn-outline-primary, .btn-outline-danger, .btn-outline-warning {
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .btn-primary, .btn-success {
+            color: #fff !important;
+            background: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-primary:hover, .btn-success:hover {
+            filter: brightness(0.9);
+        }
+        .btn-outline-primary, .btn-outline-danger, .btn-outline-warning {
+            color: var(--primary-color) !important;
+            background: transparent !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-outline-primary:hover, .btn-outline-danger:hover, .btn-outline-warning:hover {
+            background: var(--primary-color) !important;
+            color: #fff !important;
+        }
+        .table {
+            background: var(--table-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--table-border) !important;
+        }
+        .table th, .table thead th {
+            background: var(--table-header-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--table-border) !important;
+        }
+        .table td, .table th {
+            border-color: var(--table-border) !important;
+        }
+        .alert {
+            background: var(--alert-bg) !important;
+            color: var(--alert-text) !important;
+            border-color: var(--border-color) !important;
+        }
+        .badge {
+            background: var(--badge-bg) !important;
+            color: var(--text-color) !important;
+        }
+        .modal-content {
+            background: var(--modal-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--modal-border) !important;
+        }
+        .modal-header {
+            background: var(--modal-header-bg) !important;
+            color: var(--text-color) !important;
+            border-bottom: 1px solid var(--modal-border) !important;
+        }
+        .form-label, label {
+            color: var(--text-color) !important;
+        }
+        .input-group-text {
+            background: var(--input-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+        .list-group-item {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+        .border, .border-top, .border-bottom, .border-start, .border-end {
+            border-color: var(--border-color) !important;
+        }
+        /* FullCalendar dark mode uyumu */
+        .dark-mode .fc {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+        .dark-mode .fc-toolbar-title {
+            color: var(--text-color) !important;
+        }
+        .dark-mode .fc-button, .dark-mode .fc-button-primary {
+            background: var(--primary-color) !important;
+            color: #fff !important;
+            border: none !important;
+        }
+        .dark-mode .fc-button-active, .dark-mode .fc-button-primary:not(:disabled).fc-button-active {
+            background: #2563eb !important;
+            color: #fff !important;
+        }
+        .dark-mode .fc-daygrid-day, .dark-mode .fc-daygrid-day-number {
+            background: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+        .dark-mode .fc-day-today {
+            background: #232b36 !important;
+        }
+        /* Dark mode toggle button */
+        .dark-mode-toggle {
+            background: none;
+            border: none;
+            font-size: 1.35em;
+            color: var(--text-color);
+            margin-right: 0.7rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .dark-mode-toggle:hover {
+            color: var(--primary-color);
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-tasks"></i> Görev Takip
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    {% if user.is_authenticated %}
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item d-flex align-items-center">
+                        <button class="dark-mode-toggle" id="darkModeToggle" title="Koyu Mod" aria-label="Koyu Mod" type="button">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/">
+                                <i class="fas fa-shield-alt"></i> Admin Paneli
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-bell"></i>
+                                {% if unread_notifications %}
+                                    <span class="notification-badge">{{ unread_notifications }}</span>
+                                {% endif %}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <h6 class="dropdown-header">Bildirimler</h6>
+                                {% if notifications %}
+                                    {% for notification in notifications %}
+                                        <a class="dropdown-item" href="#">
+                                            <small class="text-muted">{{ notification.created_at|timesince }} önce</small>
+                                            <p class="mb-0">{{ notification.message }}</p>
+                                        </a>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="dropdown-item text-center">Bildirim yok</div>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture.url }}" alt="Avatar" class="rounded-circle me-2" style="width: 38px; height: 38px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'avatars/default_avatar_1.png' %}" alt="Default Avatar" class="rounded-circle me-2" style="width: 38px; height: 38px; object-fit: cover;">
+                                {% endif %}
+                                {% if user.first_name and user.last_name and user.first_name != user.last_name %}
+                                    {{ user.first_name }} {{ user.last_name }}
+                                {% elif user.first_name %}
+                                    {{ user.first_name }}
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-user"></i> Profilim
+                                </a>
+                                <a class="dropdown-item" href="{% url 'edit_profile' %}">
+                                    <i class="fas fa-cog"></i> Ayarlar
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt"></i> Çıkış Yap
+                                    </button>
+                                </form>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Giriş Yap
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus"></i> Kayıt Ol
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid">
+        <div class="row">
+            {% if user.is_authenticated %}
+                <!-- Sidebar -->
+                <div class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                    <div class="position-sticky pt-3">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                                    <i class="fas fa-home"></i> Ana Sayfa
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}" href="{% url 'task_list' %}">
+                                    <i class="fas fa-tasks"></i> Görevlerim
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'category_list' %}active{% endif %}" href="{% url 'category_list' %}">
+                                    <i class="fas fa-folder"></i> Kategoriler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'statistics' %}active{% endif %}" href="{% url 'statistics' %}">
+                                    <i class="fas fa-chart-pie"></i> İstatistikler
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'group_list' %}active{% endif %}" href="{% url 'group_list' %}">
+                                    <i class="fas fa-users"></i> Gruplar
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}" href="{% url 'notifications' %}">
+                                    <i class="fas fa-bell"></i> Bildirimler
+                                </a>
+                            </li>
+                            <li class="nav-item mt-3">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'help' %}active{% endif %}" href="{% url 'help' %}">
+                                    <i class="fas fa-circle-question"></i> Yardım & İletişim
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Main Content Area -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            {% else %}
+                <main class="col-12 px-md-4 py-4">
+            {% endif %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+        // Bildirim sayısını güncelle ve badge'i göster
+        function updateNotificationCount() {
+            fetch('/notifications/count/')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('notification-badge');
+                    if (data.count > 0) {
+                        badge.textContent = data.count;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                });
+        }
+        setInterval(updateNotificationCount, 10000);
+        updateNotificationCount();
+
+        // Yeni bildirimleri kontrol et ve toast göster + ses çal (sadece ilk kez)
+        function checkNewNotification() {
+            fetch('/notifications/new/')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.id) {
+                        const lastSeenId = localStorage.getItem('lastSeenNotificationId');
+                        if (data.id.toString() !== lastSeenId) {
+                            // Yeni bildirimi ilk kez görüyor
+                            showToast(data.title, data.message);
+                            const notificationSound = document.getElementById('notificationSound');
+                            if (notificationSound) notificationSound.play();
+                            localStorage.setItem('lastSeenNotificationId', data.id);
+                            updateNotificationCount();
+                        }
+                    }
+                });
+        }
+        setInterval(checkNewNotification, 10000);
+        checkNewNotification();
+
+        // Toast fonksiyonu
+        function showToast(title, message) {
+            let toast = document.createElement('div');
+            toast.className = 'toast align-items-center text-bg-primary border-0 show';
+            toast.style.position = 'fixed';
+            toast.style.top = '20px';
+            toast.style.right = '20px';
+            toast.style.zIndex = 9999;
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <strong>${title}</strong><br>${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 7000);
+            toast.querySelector('.btn-close').onclick = () => toast.remove();
+        }
+
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const body = document.body;
+        function setDarkMode(on) {
+            if (on) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'on');
+                darkModeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('darkMode', 'off');
+                darkModeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+        }
+        // İlk yüklemede localStorage kontrolü
+        if (localStorage.getItem('darkMode') === 'on') {
+            setDarkMode(true);
+        } else {
+            setDarkMode(false);
+        }
+        darkModeToggle.addEventListener('click', function() {
+            setDarkMode(!body.classList.contains('dark-mode'));
+        });
+
+        // Bildirim sesi
+        const notificationSound = document.getElementById('notificationSound');
+        notificationSound.play();
+    </script>
+    <!-- Bildirim sesi -->
+    <audio id="notificationSound" src="{% static 'notification.mp3' %}" preload="auto"></audio>
+    {% block extra_js %}{% endblock %}
+</body>
+</html> 

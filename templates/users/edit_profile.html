@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profili Düzenle{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="text-center mb-0">Profili Düzenle</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Profil Fotoğrafı -->
+                    <div class="mb-4">
+                        <label class="form-label">Profil Fotoğrafı</label>
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-3">
+                                {% if user.profile_picture %}
+                                    <img src="{{ user.profile_picture.url }}" alt="Mevcut Profil Resmi" class="rounded-circle img-fluid mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'avatars/default_avatar_1.png' %}" alt="Varsayılan Profil Resmi" class="rounded-circle img-fluid mb-2" style="width: 150px; height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <p class="text-muted small">Mevcut Profil Resmi</p>
+                            </div>
+                            <div class="col-md-8">
+                                <!-- Hazır Avatarlar -->
+                                <div class="mb-3">
+                                    <label class="form-label">Hazır Avatarlar</label>
+                                    <div class="d-flex flex-wrap gap-2 justify-content-center">
+                                        {% for i in "12345678" %}
+                                        <div class="avatar-option">
+                                            <input type="radio" class="btn-check" name="avatar_choice" id="avatar{{ i }}" value="default_avatar_{{ i }}.png">
+                                            <label class="btn btn-outline-primary p-1" for="avatar{{ i }}">
+                                                <img src="{% static 'avatars/default_avatar_'|add:i|add:'.png' %}" alt="Avatar {{ i }}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;">
+                                            </label>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <!-- Özel Fotoğraf Yükleme -->
+                                <div class="custom-file mt-3">
+                                    <label class="form-label">veya kendi fotoğrafınızı yükleyin</label>
+                                    {{ form.profile_picture }}
+                                    <div class="form-text text-muted">
+                                        Maksimum dosya boyutu: 5MB
+                                    </div>
+                                    {% if form.profile_picture.errors %}
+                                        <div class="alert alert-danger mt-2">
+                                            {{ form.profile_picture.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diğer Form Alanları -->
+                    {% for field in form %}
+                        {% if field.name != 'profile_picture' and field.name != 'current_password' and field.name != 'new_password' and field.name != 'new_password2' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="alert alert-danger mt-1">
+                                    {{ field.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Şifre Değiştirme Alanı -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Şifre Değiştir</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="id_current_password" class="form-label">Mevcut Şifre</label>
+                                {{ form.current_password }}
+                                {% if form.current_password.errors %}
+                                    <div class="alert alert-danger mt-1">
+                                        {{ form.current_password.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_new_password" class="form-label">Yeni Şifre</label>
+                                {{ form.new_password }}
+                                {% if form.new_password.errors %}
+                                    <div class="alert alert-danger mt-1">
+                                        {{ form.new_password.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_new_password2" class="form-label">Yeni Şifre (Tekrar)</label>
+                                {{ form.new_password2 }}
+                                {% if form.new_password2.errors %}
+                                    <div class="alert alert-danger mt-1">
+                                        {{ form.new_password2.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                        <a href="{% url 'profile' %}" class="btn btn-secondary">İptal</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.avatar-option input[type="radio"] {
+    display: none;
+}
+.avatar-option input[type="radio"]:checked + label {
+    border: 3px solid #0d6efd;
+    border-radius: 50%;
+}
+.avatar-option label {
+    cursor: pointer;
+    padding: 2px;
+    border: 3px solid transparent;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+.avatar-option label:hover {
+    transform: scale(1.1);
+}
+</style>
+{% endblock %} 

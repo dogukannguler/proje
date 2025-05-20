@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Yeni Grup Oluştur{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width: 520px;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white rounded-top-4" style="background: linear-gradient(90deg, #60a5fa 0%, #2563eb 100%);">
+            <h2 class="mb-0 fw-bold d-flex align-items-center gap-2"><i class="fas fa-users"></i> Yeni Grup Oluştur</h2>
+        </div>
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label for="name" class="form-label fs-5">Grup Adı</label>
+                    <input type="text" class="form-control form-control-lg rounded-3" id="name" name="name" required maxlength="100">
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="form-label fs-5">Açıklama</label>
+                    <textarea class="form-control form-control-lg rounded-3" id="description" name="description" rows="3"></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-3 px-4"><i class="fas fa-plus me-2"></i>Oluştur</button>
+                    <a href="{% url 'group_list' %}" class="btn btn-link btn-lg">İptal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+.card-header.bg-gradient {
+    border-radius: 1.5rem 1.5rem 0 0 !important;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.card {
+    border-radius: 1.5rem !important;
+    box-shadow: 0 2px 12px #2563eb11 !important;
+}
+input, textarea {
+    border-radius: 0.7rem !important;
+}
+.btn {
+    border-radius: 0.7rem !important;
+    font-weight: 500;
+}
+body.dark-mode .card {
+    background: #232b36 !important;
+    color: #e5e7eb !important;
+}
+body.dark-mode .card-header.bg-gradient {
+    background: linear-gradient(90deg, #232b36 0%, #2563eb 100%) !important;
+    color: #fff !important;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}İstatistikler{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2"></i>Görev İstatistikleri</h2>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow-sm border-0 bg-gradient" style="background: linear-gradient(90deg, #6366f1 0%, #38bdf8 100%); color: #fff;">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">{{ total }}</div>
+                    <div class="fw-semibold">Toplam Görev</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow-sm border-0" style="background: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%); color: #fff;">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">{{ in_progress }}</div>
+                    <div class="fw-semibold">Devam Ediyor</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow-sm border-0" style="background: linear-gradient(90deg, #f87171 0%, #fbbf24 100%); color: #fff;">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">{{ overdue }}</div>
+                    <div class="fw-semibold">Geciken Görev</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-center shadow-sm border-0" style="background: linear-gradient(90deg, #f8d7da 0%, #fbbf24 100%); color: #c0392b;">
+                <div class="card-body">
+                    <div class="fs-2 fw-bold">{{ completed }}</div>
+                    <div class="fw-semibold">Tamamlandı</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    Kategoriye Göre Görev Dağılımı
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    Duruma Göre Görev Dağılımı
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Kategoriye göre dağılım
+const categoryData = {
+    labels: {{ category_labels|safe }},
+    datasets: [{
+        data: {{ category_values|safe }},
+        backgroundColor: [
+            '#6366f1', '#38bdf8', '#fbbf24', '#f87171', '#f8d7da', '#a5b4fc', '#f59e42', '#fbbf24', '#f59e42', '#f87171'
+        ],
+        borderWidth: 1
+    }]
+};
+const categoryConfig = {
+    type: 'pie',
+    data: categoryData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+        }
+    }
+};
+new Chart(document.getElementById('categoryChart'), categoryConfig);
+
+// Duruma göre dağılım
+const statusLabels = {
+    'todo': 'Yapılacak',
+    'in_progress': 'Devam Ediyor',
+    'completed': 'Tamamlandı',
+};
+const statusColors = {
+    'todo': '#6366f1',
+    'in_progress': '#fbbf24',
+    'completed': '#f8d7da',
+};
+const statusData = {
+    labels: {{ status_labels|safe }}.map(k => statusLabels[k] || k),
+    datasets: [{
+        data: {{ status_values|safe }},
+        backgroundColor: {{ status_labels|safe }}.map(k => statusColors[k] || '#38bdf8'),
+        borderWidth: 1
+    }]
+};
+const statusConfig = {
+    type: 'bar',
+    data: statusData,
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+        },
+        scales: {
+            y: { beginAtZero: true }
+        }
+    }
+};
+new Chart(document.getElementById('statusChart'), statusConfig);
+</script>
+{% endblock %} 
