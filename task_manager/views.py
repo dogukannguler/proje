@@ -14,6 +14,8 @@ from collections import Counter
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.urls import reverse
+from django.utils.dateparse import parse_datetime
+from zoneinfo import ZoneInfo
 
 User = get_user_model()
 
@@ -365,11 +367,9 @@ def group_task_edit(request, group_id, task_id):
         task.status = request.POST.get('status')
         due_date = request.POST.get('due_date')
         if due_date:
-            from django.utils.dateparse import parse_datetime
-            import pytz
             dt = parse_datetime(due_date)
             if dt and not dt.tzinfo:
-                dt = pytz.UTC.localize(dt)
+                dt = dt.replace(tzinfo=ZoneInfo('UTC'))
             task.due_date = dt
         task.save()
         messages.success(request, 'Grup görevi güncellendi.')
